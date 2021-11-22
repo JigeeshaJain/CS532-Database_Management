@@ -1,0 +1,1 @@
+select lastname from students where GPA<4;

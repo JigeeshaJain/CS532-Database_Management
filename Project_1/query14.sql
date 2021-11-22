@@ -1,0 +1,1 @@
+select dept_code, course#, semester, year from classes where sect# > 1;

@@ -1,0 +1,1 @@
+select title from courses where course# in (select course# from classes where classid in (select classid from enrollments where sid = 'B004')) minus select title from courses where course# in (select course# from classes where classid in (select classid from enrollments where sid = 'B003'));

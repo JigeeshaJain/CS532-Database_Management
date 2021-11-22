@@ -1,0 +1,1 @@
+select e.sid, sum(ngrade)/count(classid) as cgpa from enrollments e, grades g where e.lgrade=g.lgrade group by e.sid order by sum(ngrade)/count(classid) desc;

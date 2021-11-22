@@ -1,0 +1,1 @@
+select dept_code || ' - '|| course# AS course_id , title from courses where course# in (select course# from classes where year = '2021' and semester = 'Fall');

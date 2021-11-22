@@ -1,0 +1,152 @@
+SQL> start query1
+SQL> select dept_code || ' - '|| course# AS course_id , title from courses where course# in (select course# from classes where year = '2021' and semester = 'Fall');
+
+COURSE_ID                                       TITLE                           
+----------------------------------------------- --------------------            
+CS - 240                                        data structure                  
+CS - 532                                        database systems                
+
+SQL> start query2
+SQL> select firstname from students s, enrollments e
+  2  where s.sid = e.sid and e.classid in (select classid from classes where dept_code = 'CS')
+  3  intersect
+  4  select firstname from students s, enrollments e
+  5  where s.sid = e.sid and e.classid in (select classid from classes where dept_code = 'Math');
+
+FIRSTNAME                                                                       
+---------------                                                                 
+Anne                                                                            
+Terry                                                                           
+
+SQL> start query3
+SQL> select dept_code, course# from classes where year = '2021';
+
+DEPT    COURSE#                                                                 
+---- ----------                                                                 
+CS          240                                                                 
+CS          432                                                                 
+CS          532                                                                 
+Math        221                                                                 
+
+SQL> start query4
+SQL> select sid, lastname, GPA from students where status <>'graduate' intersect select sid, lastname, GPA from students where sid in (select sid from enrollments where lgrade = 'C');
+
+SID  LASTNAME               GPA                                                 
+---- --------------- ----------                                                 
+B004 Taylor                 2.7                                                 
+
+SQL> start query5
+SQL> select lastname from students where GPA<4;
+
+LASTNAME                                                                        
+---------------                                                                 
+Broder                                                                          
+Buttler                                                                         
+Wang                                                                            
+Taylor                                                                          
+Smith                                                                           
+
+SQL> start query6
+SQL> select sid, firstname from students where sid in (select sid from enrollments where lgrade = 'A');
+
+SID  FIRSTNAME                                                                  
+---- ---------------                                                            
+B003 Tracy                                                                      
+B006 Terry                                                                      
+B007 Becky                                                                      
+B001 Anne                                                                       
+
+SQL> start query7
+SQL> select dept_code, count(dept_code) as most_frequent from classes group by dept_code order by count(dept_code)desc;
+
+DEPT MOST_FREQUENT                                                              
+---- -------------                                                              
+CS               4                                                              
+Math             3                                                              
+
+SQL> start query8
+SQL> select classid, dept_code, course#, (limit-class_size) as seats_available from classes where semester = 'Fall' and year = '2021' and (limit - class_size) >0;
+
+CLASS DEPT    COURSE# SEATS_AVAILABLE                                           
+----- ---- ---------- ---------------                                           
+c0005 CS          240               1                                           
+c0006 CS          532               1                                           
+
+SQL> start query9
+SQL> select sid, lastname from students s where (select count(*) from enrollments where sid=s.sid)>=3;
+
+SID  LASTNAME                                                                   
+---- ---------------                                                            
+B001 Broder                                                                     
+
+SQL> start query10
+SQL> select classes.classid, classes.dept_code, classes.course#, classes.sect#, classes.year, classes.semester, classes.limit, classes.class_size from classes inner join enrollments on classes.classid = enrollments.classid inner join students on enrollments.sid = students.sid where classes.year = '2021' and classes.semester = 'Fall' and classes.dept_code = 'CS'
+  2   group by classes.classid, classes.dept_code, classes.course#, classes.sect#, classes.year, classes.semester, classes.limit, classes.class_size having count(enrollments.classid)<3;
+
+no rows selected
+
+SQL> start query11
+SQL>  select sid,firstname from students where sid in ( select sid from enrollments where classid in ( select classid from classes where dept_code ='Math' and course# like '2__'));
+
+SID  FIRSTNAME                                                                  
+---- ---------------                                                            
+B007 Becky                                                                      
+
+SQL> start query12
+SQL> select title from courses where course# in (select course# from classes where classid in (select classid from enrollments where sid = 'B004')) minus select title from courses where course# in (select course# from classes where classid in (select classid from enrollments where sid = 'B003'));
+
+no rows selected
+
+SQL> start query13
+SQL> select firstname from students where sid in ( select sid from enrollments where classid in (select classid from classes where dept_code ='CS' and course# = '532'));
+
+FIRSTNAME                                                                       
+---------------                                                                 
+Anne                                                                            
+Jack                                                                            
+Terry                                                                           
+
+SQL> start query14
+SQL> select dept_code, course#, semester, year from classes where sect# > 1;
+
+DEPT    COURSE# SEMEST       YEAR                                               
+---- ---------- ------ ----------                                               
+Math        314 Fall         2020                                               
+
+SQL> start query15
+SQL> select distinct students.sid, students.lastname from students join enrollments on students.sid = enrollments.sid join grades on enrollments.lgrade = grades.lgrade where (enrollments.classid, grades.ngrade) in (select enrollments.classid, max(ngrade) from enrollments, grades where enrollments.lgrade = grades.lgrade group by enrollments.classid);
+
+SID  LASTNAME                                                                   
+---- ---------------                                                            
+B004 Taylor                                                                     
+B001 Broder                                                                     
+B002 Buttler                                                                    
+B003 Wang                                                                       
+B007 Lee                                                                        
+B006 Zillman                                                                    
+
+6 rows selected.
+
+SQL> start query16
+SQL> select courses.dept_code, courses.course#, courses.title, lgrade as final_grade from courses, classes, enrollments where courses.dept_code = classes.dept_code and courses.course# = classes.course# and classes.classid = enrollments.classid and enrollments.sid in (select sid from students where sid = 'B005');
+
+DEPT    COURSE# TITLE                F                                          
+---- ---------- -------------------- -                                          
+CS          532 database systems     B                                          
+
+SQL> start query20
+SQL> select e.sid, sum(ngrade)/count(classid) as cgpa from enrollments e, grades g where e.lgrade=g.lgrade group by e.sid order by sum(ngrade)/count(classid) desc;
+
+SID        CGPA                                                                 
+---- ----------                                                                 
+B003          4                                                                 
+B007          4                                                                 
+B006          4                                                                 
+B001        3.5                                                                 
+B002          3                                                                 
+B005          3                                                                 
+B004        2.5                                                                 
+
+7 rows selected.
+
+SQL> spool off

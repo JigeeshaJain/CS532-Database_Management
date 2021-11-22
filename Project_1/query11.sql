@@ -1,0 +1,1 @@
+ select sid,firstname from students where sid in ( select sid from enrollments where classid in ( select classid from classes where dept_code ='Math' and course# like '2__'));

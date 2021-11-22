@@ -1,0 +1,1 @@
+select distinct students.sid, students.lastname from students join enrollments on students.sid = enrollments.sid join grades on enrollments.lgrade = grades.lgrade where (enrollments.classid, grades.ngrade) in (select enrollments.classid, max(ngrade) from enrollments, grades where enrollments.lgrade = grades.lgrade group by enrollments.classid);

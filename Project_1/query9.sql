@@ -1,0 +1,1 @@
+select sid, lastname from students s where (select count(*) from enrollments where sid=s.sid)>=3;

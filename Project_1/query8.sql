@@ -1,0 +1,1 @@
+select classid, dept_code, course#, (limit-class_size) as seats_available from classes where semester = 'Fall' and year = '2021' and (limit - class_size) >0;

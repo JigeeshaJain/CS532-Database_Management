@@ -1,0 +1,1 @@
+select sid, firstname from students where sid in (select sid from enrollments where lgrade = 'A');

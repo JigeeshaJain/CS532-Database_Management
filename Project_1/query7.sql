@@ -1,0 +1,1 @@
+select dept_code, count(dept_code) as most_frequent from classes group by dept_code order by count(dept_code)desc;

@@ -1,0 +1,1 @@
+select firstname from students where sid in ( select sid from enrollments where classid in (select classid from classes where dept_code ='CS' and course# = '532'));
